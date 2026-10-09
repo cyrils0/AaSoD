@@ -21,7 +21,7 @@ T GenerateRandom(T lower, T upper) {
 }
 
 template <typename T>
-T GenerateRandom(complex<T> lower, complex<T> upper) {
+complex<T> GenerateRandom(complex<T> lower, complex<T> upper) {
     random_device rd;
     mt19937 gen(rd());
 	uniform_real_distribution<T> disRe(lower.real(), upper.real());
@@ -85,9 +85,9 @@ public:
 		}
 	}
 	void swap(Matrix& other){
-		swap(_rows, other._rows);
-		swap(_cols, other._cols);
-		swap(_data, other._data);
+		std::swap(_rows, other._rows);
+		std::swap(_cols, other._cols);
+		std::swap(_data, other._data);
 	}
 	Matrix& operator=(const Matrix& other){
 		Matrix tmp(other);
@@ -121,6 +121,85 @@ public:
 		return !(*this == other);
 	}
 
+	Matrix operator+(const Matrix& other) const {
+		if(_rows != other._rows || _cols != other._cols){
+			throw invalid_argument("matrix dimensions must be equal");
+		}
+		Matrix res(_rows, _cols, 0);
+		for(int i = 0; i < _rows * _cols; i++){
+			res._data[i] = _data[i] + other._data[i];
+		}
+		return res;
+	}
+
+	Matrix operator-(const Matrix& other) const {
+		if(_rows != other._rows || _cols != other._cols){
+			throw invalid_argument("matrix dimensions must be equal");
+		}
+		Matrix res(_rows, _cols, 0);
+		for(int i = 0; i < _rows * _cols; i++){
+			res._data[i] = _data[i] - other._data[i];
+		}
+		return res;
+	}
+
+	Matrix operator*(const Matrix& other) const {
+		if (_cols != other._rows) {
+			throw invalid_argument("matrix dimensions must be compatible");
+		}
+
+		Matrix res(_rows, other._cols, 0);
+
+		for (int i = 0; i < _rows; i++) {
+			for (int j = 0; j < other._cols; j++) {
+				for (int k = 0; k < _cols; k++) {
+					res(i, j) += (*this)(i, k) * other(k, j);
+				}
+			}
+		}
+
+		return res;
+	}
+
+	Matrix operator*(const T& scalar) const{
+		Matrix res(_rows, _cols, 0);
+		for(int i = 0; i < _rows * _cols; i++){
+			res._data[i] = _data[i] * scalar;
+		}
+		return res;
+	}
+
+	Matrix operator/(const T& scalar){
+		if(scalar == T{}){
+			throw invalid_argument("division by zero");
+		}
+		Matrix res(_rows, _cols, 0);
+		for(int i = 0; i < _rows * _cols; i++){
+			res._data[i] = _data[i] / scalar;
+		}
+		return res;
+	}
+
+	T trace() const{
+		if(_rows != _cols){
+			throw invalid_argument("matrix must be square");
+		}
+		T sum = T{};
+		for(int i = 0; i < _rows; i++){
+			sum += _data[_cols * i + i];
+		}
+		return sum;
+	}
+
+	friend ostream& operator<<(ostream& out, const Matrix& matrix){
+		for(int i = 0; i < matrix._rows; i++){
+			for(int j = 0; j < matrix._cols; j++){
+				out << matrix(i, j) << ' ';
+			}
+			out << '\n';
+		}
+		return out;
+	}
 
 
 
@@ -134,10 +213,28 @@ public:
 
 };
 
-int main() {
-    Matrix<int> matrix(3, 3, 5);
+template<typename T>
+Matrix<T> operator*(const T& scalar, const Matrix<T>& matrix){
+	return matrix * scalar;
+}
 
-    cout << matrix(0, 0) << '\n';
+int main() {
+	try{	
+	Matrix<complex<double>> a(1, 2, complex<double>(0.0, 0.0));
+	Matrix<complex<double>> b(1, 2, complex<double>(0.0, 0.0));
+
+	a(0, 0) = complex<double>(1.0, 2.0);
+	a(0, 1) = complex<double>(3.0, 4.0);
+
+	b(0, 0) = complex<double>(1.0 + 1e-8, 2.0);
+	b(0, 1) = complex<double>(3.0, 4.0 + 1e-8);
+
+	cout << (a == b) << '\n';
+	cout << (a != b) << '\n';
+	} catch(const exception& e){
+		cerr << e.what() << '\n';
+	}
+
 
     return 0;
 }
