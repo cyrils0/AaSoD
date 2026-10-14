@@ -14,5 +14,5 @@ set_target_properties(lab1 PROPERTIES
 
 target_sources(lab1 
     PRIVATE 
-        FILE_SET modules TYPE CXX_MODULES FILES matrix.ixx
+        FILE_SET modules TYPE CXX_MODULES FILES matrix.cppm
 )
