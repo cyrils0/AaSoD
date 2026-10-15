@@ -5,7 +5,7 @@ using namespace std;
 
 export template <typename T>
 requires integral<T>
-T GenerateRandom(T lower, T upper){
+T generate_random(T lower, T upper){
 	random_device rd;
 	mt19937 gen(rd());
 	uniform_int_distribution<T> dis(lower, upper);
@@ -14,7 +14,7 @@ T GenerateRandom(T lower, T upper){
 
 export template <typename T>
 requires floating_point<T>
-T GenerateRandom(T lower, T upper) {
+T generate_random(T lower, T upper) {
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<T> dis(lower, upper);
@@ -22,7 +22,7 @@ T GenerateRandom(T lower, T upper) {
 }
 
 export template <typename T>
-complex<T> GenerateRandom(complex<T> lower, complex<T> upper) {
+complex<T> generate_random(complex<T> lower, complex<T> upper) {
     random_device rd;
     mt19937 gen(rd());
 	uniform_real_distribution<T> disRe(lower.real(), upper.real());
@@ -33,8 +33,8 @@ complex<T> GenerateRandom(complex<T> lower, complex<T> upper) {
 export template<typename T>
 class Matrix{
 private:
-	int _rows;
-	int _cols;
+	size_t _rows;
+	size_t _cols;
 	T* _data;
     static constexpr double EPS = 1e-6;
 
@@ -54,25 +54,25 @@ private:
 		return abs(a.real() - b.real()) < EPS && abs(a.imag() - b.imag()) < EPS;
 	}
 public:
-	Matrix(int r, int c, T value) {
+	Matrix(size_t r, size_t c, T value) {
 		if(r <= 0 || c <= 0){
 			throw invalid_argument("matrix dimensions must be > 0");
 		}
 		_rows = r;
 		_cols = c;
 		_data = new T[_rows * _cols];
-		for(int i = 0; i < _rows * _cols; i++){
+		for(size_t i = 0; i < _rows * _cols; i++){
 			_data[i] = value;
 		}
 
 	}
-	Matrix(int r, int c, T lowerborder, T upperborder) : _rows(r), _cols(c){
+	Matrix(size_t r, size_t c, T lowerborder, T upperborder) : _rows(r), _cols(c){
 		if(_rows <= 0 || _cols <= 0){
 			throw invalid_argument("matrix dimensions must be > 0");
 		}
 		_data = new T[_rows * _cols];
-		for(int i = 0; i < _rows * _cols; i++){
-			_data[i] = GenerateRandom(lowerborder, upperborder);
+		for(size_t i = 0; i < _rows * _cols; i++){
+			_data[i] = generate_random(lowerborder, upperborder);
 		}
 
 	}
@@ -81,7 +81,7 @@ public:
 		_rows = other._rows;
 		_cols = other._cols;
 		_data = new T[_rows * _cols];
-		for(int i = 0; i < _rows * _cols; i++){
+		for(size_t i = 0; i < _rows * _cols; i++){
 			_data[i] = other._data[i];
 		}
 	}
@@ -95,13 +95,13 @@ public:
 		this->swap(tmp);
 		return *this;
 	}
-	T& operator()(int r, int c){
+	T& operator()(size_t r, size_t c){
 		if(r < 0 || r >= _rows || c < 0 || c>= _cols){
 			throw out_of_range("index out of range");
 		}
 		return _data[r * _cols + c];
 	}
-	const T& operator()(int r, int c) const{
+	const T& operator()(size_t r, size_t c) const{
 		if(r < 0 || r >= _rows || c < 0 || c>= _cols){
 			throw out_of_range("index out of range");
 		}
@@ -111,7 +111,7 @@ public:
 		if(_rows != other._rows || _cols != other._cols){
 			return false;
 		}
-		for(int i = 0; i < _rows * _cols; i++){
+		for(size_t i = 0; i < _rows * _cols; i++){
 			if(!equal(_data[i], other._data[i])){
 				return false;
 			}
@@ -127,7 +127,7 @@ public:
 			throw invalid_argument("matrix dimensions must be equal");
 		}
 		Matrix res(_rows, _cols, 0);
-		for(int i = 0; i < _rows * _cols; i++){
+		for(size_t i = 0; i < _rows * _cols; i++){
 			res._data[i] = _data[i] + other._data[i];
 		}
 		return res;
@@ -138,7 +138,7 @@ public:
 			throw invalid_argument("matrix dimensions must be equal");
 		}
 		Matrix res(_rows, _cols, 0);
-		for(int i = 0; i < _rows * _cols; i++){
+		for(size_t i = 0; i < _rows * _cols; i++){
 			res._data[i] = _data[i] - other._data[i];
 		}
 		return res;
@@ -149,11 +149,11 @@ public:
 			throw invalid_argument("matrix dimensions must be compatible");
 		}
 
-		Matrix res(_rows, other._cols, 0);
+		Matrix res(_rows, other._cols, T{});
 
-		for (int i = 0; i < _rows; i++) {
-			for (int j = 0; j < other._cols; j++) {
-				for (int k = 0; k < _cols; k++) {
+		for (size_t i = 0; i < _rows; i++) {
+			for (size_t j = 0; j < other._cols; j++) {
+				for (size_t k = 0; k < _cols; k++) {
 					res(i, j) += (*this)(i, k) * other(k, j);
 				}
 			}
@@ -164,7 +164,7 @@ public:
 
 	Matrix operator*(const T& scalar) const{
 		Matrix res(_rows, _cols, 0);
-		for(int i = 0; i < _rows * _cols; i++){
+		for(size_t i = 0; i < _rows * _cols; i++){
 			res._data[i] = _data[i] * scalar;
 		}
 		return res;
@@ -175,7 +175,7 @@ public:
 			throw invalid_argument("division by zero");
 		}
 		Matrix res(_rows, _cols, 0);
-		for(int i = 0; i < _rows * _cols; i++){
+		for(size_t i = 0; i < _rows * _cols; i++){
 			res._data[i] = _data[i] / scalar;
 		}
 		return res;
@@ -186,15 +186,15 @@ public:
 			throw invalid_argument("matrix must be square");
 		}
 		T sum = T{};
-		for(int i = 0; i < _rows; i++){
+		for(size_t i = 0; i < _rows; i++){
 			sum += _data[_cols * i + i];
 		}
 		return sum;
 	}
 
 	friend ostream& operator<<(ostream& out, const Matrix& matrix){
-		for(int i = 0; i < matrix._rows; i++){
-			for(int j = 0; j < matrix._cols; j++){
+		for(size_t i = 0; i < matrix._rows; i++){
+			for(size_t j = 0; j < matrix._cols; j++){
 				out << matrix(i, j) << ' ';
 			}
 			out << '\n';
@@ -208,8 +208,8 @@ public:
 
 
 
-	int get_rows() const {return _rows;}
-	int get_cols() const {return _cols;}
+	size_t get_rows() const {return _rows;}
+	size_t get_cols() const {return _cols;}
 
 
 };
