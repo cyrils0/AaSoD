@@ -7,7 +7,7 @@ export template <typename T>
 requires integral<T>
 T generate_random(T lower, T upper){
 	random_device rd;
-	mt19937 gen(rd());
+	mt19937 gen(5);
 	uniform_int_distribution<T> dis(lower, upper);
 	return dis(gen);
 }
@@ -49,6 +49,7 @@ private:
 	bool equal(const U& a, const U& b) const {
 		return abs(a - b) < EPS;
 	}
+
 	template<typename U>
 	bool equal(complex<U> a, complex<U> b) const{
 		return abs(a.real() - b.real()) < EPS && abs(a.imag() - b.imag()) < EPS;
@@ -100,12 +101,14 @@ public:
 			throw out_of_range("index out of range");
 		}
 		return _data[r * _cols + c];
+		cout << "not const ()" << '\n';
 	}
 	const T& operator()(size_t r, size_t c) const{
 		if(r < 0 || r >= _rows || c < 0 || c>= _cols){
 			throw out_of_range("index out of range");
 		}
 		return _data[r * _cols + c];
+		cout << "const ()" << '\n';
 	}
 	bool operator==(const Matrix& other) const {
 		if(_rows != other._rows || _cols != other._cols){
@@ -202,16 +205,8 @@ public:
 		return out;
 	}
 
-
-
-
-
-
-
 	size_t get_rows() const {return _rows;}
 	size_t get_cols() const {return _cols;}
-
-
 };
 
 export template<typename T>

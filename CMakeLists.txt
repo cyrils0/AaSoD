@@ -6,4 +6,5 @@ set(CMAKE_CXX_MODULE_STD ON)
 project(AaSoD CXX)
 
 add_subdirectory(lab1)
+add_subdirectory(lab2)
 

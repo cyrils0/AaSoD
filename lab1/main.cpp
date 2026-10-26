@@ -23,25 +23,49 @@ bool are_coplanar(const Matrix<T>& matrix) {
 int main() {
 	try{	
 
-		Matrix<complex<double>> vectors(3, 3, complex<double>{});
+		Matrix<complex<double>> complex_vectors(3, 3, complex<double>{});
+		Matrix<double> double_vectors(3, 3, 0.0);
+		Matrix<int> int_vector(3, 3, 0);
+		Matrix<int> int_vectors(3, 3, 1, 10);
 
-		vectors(0, 0) = {1.0, 0.0};
-		vectors(0, 1) = {0.0, 0.0};
-		vectors(0, 2) = {0.0, 0.0};
+		complex_vectors(0, 0) = {1.0, 0.0};
+		complex_vectors(0, 1) = {0.0, 0.0};
+		complex_vectors(0, 2) = {0.0, 0.0};
+		complex_vectors(1, 0) = {0.0, 0.0};
+		complex_vectors(1, 1) = {1.0, 0.0};
+		complex_vectors(1, 2) = {0.0, 0.0};
+		complex_vectors(2, 0) = {0.0, 0.0};
+		complex_vectors(2, 1) = {0.0, 0.0};
+		complex_vectors(2, 2) = {0.0, 1.0};
 
-		vectors(1, 0) = {0.0, 0.0};
-		vectors(1, 1) = {1.0, 0.0};
-		vectors(1, 2) = {0.0, 0.0};
+		double_vectors(0, 0) = 1.0;
+		double_vectors(0, 1) = 1.0;
+		double_vectors(0, 2) = 0.0;
+		double_vectors(1, 0) = 0.0;
+		double_vectors(1, 1) = 1.0;
+		double_vectors(1, 2) = 0.0;
+		double_vectors(2, 0) = 1.0;
+		double_vectors(2, 1) = 0.0;
+		double_vectors(2, 2) = 1.0;
 
-		vectors(2, 0) = {0.0, 0.0};
-		vectors(2, 1) = {0.0, 0.0};
-		vectors(2, 2) = {0.0, 1.0};
 
-		cout << are_coplanar(vectors) << '\n';
+		int_vector(0, 0) = 1;
+		int_vector(0, 1) = 2;
+		int_vector(0, 2) = 3;
+		int_vector(1, 0) = 4;
+		int_vector(1, 1) = 5;
+		int_vector(1, 2) = 6;
+		int_vector(2, 0) = 7;
+		int_vector(2, 1) = 8;
+		int_vector(2, 2) = 9;
+		
+		cout << boolalpha<< are_coplanar(int_vector) << '\n';
+		cout << are_coplanar(complex_vectors) << '\n';
+		cout << are_coplanar(double_vectors) << '\n';
+		cout << int_vectors << '\n';
 	} catch(const exception& e){
-		cerr << e.what() << '\n';
+		cerr << "exception: "<< e.what() << '\n';
 	}
-
 
     return 0;
 }
