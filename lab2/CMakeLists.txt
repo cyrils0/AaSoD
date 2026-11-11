@@ -12,3 +12,8 @@ set_target_properties(lab2 PROPERTIES
     CXX_MODULE_STD ON
 )
 
+target_sources(lab2 
+    PRIVATE 
+        FILE_SET modules TYPE CXX_MODULES FILES LinkedList.cppm
+)
+
