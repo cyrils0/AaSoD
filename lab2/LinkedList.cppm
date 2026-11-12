@@ -10,6 +10,7 @@ struct Node{
     Node(const T& value, Node<T>* next_node) : data(value), next(next_node) {} 
 };
 
+
 export template <typename T>
 class LinkedList{
 private:
@@ -17,6 +18,9 @@ private:
     Node<T>* tail;
 
 public:
+    template <typename U>
+    friend void DeleteElmEnd(LinkedList<U>& list, int index);
+
     LinkedList() : head(nullptr), tail(nullptr) {}
 
     LinkedList(int count, int min_value, int max_value) : head(nullptr), tail(nullptr){
